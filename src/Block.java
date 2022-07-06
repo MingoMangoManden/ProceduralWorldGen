@@ -11,14 +11,11 @@ public class Block {
 		this.y = y;
 		this.biome = Biome.RED_DESERT;
 	}
-	
-	public void draw(Graphics2D g2) {
-		
-		g2.setColor(biome.getBiomeColor());
-		
-		g2.fillRect(x, y, SimulationPanel.blockSize, SimulationPanel.blockSize);
+
+	public Biome getBiome() {
+		return biome;
 	}
-	
+
 	public void setBiome(Biome biome) {
 		this.biome = biome;
 	}

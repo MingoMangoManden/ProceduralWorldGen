@@ -32,7 +32,7 @@ public class World {
 				Block block = new Block(x*SimulationPanel.blockSize, y*SimulationPanel.blockSize);
 				evalBiome(block);
 				
-				Color color = block.biome.getBiomeColor();
+				Color color = block.biome.getBiomeColor(seed);
 				int r = color.getRed();
 				int g = color.getGreen();
 				int b = color.getBlue();

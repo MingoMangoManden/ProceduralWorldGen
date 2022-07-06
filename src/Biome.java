@@ -28,7 +28,7 @@ public enum Biome {
 		this.clrs = clrs;
 	}
 	
-	public Color getBiomeColor() {
+	public Color getBiomeColor(long seed) {
 		if (clrs.length > 1) {
 			int num = (int) (Math.random()*clrs.length);
 			return clrs[num];
