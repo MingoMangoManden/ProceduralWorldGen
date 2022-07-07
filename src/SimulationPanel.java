@@ -3,11 +3,12 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.Random;
 
 public class SimulationPanel extends JPanel {
 	
-	public static final int blockSize = 1;
 	public static int blocksHorizontal, blocksVertical;
 	
 	World world;
@@ -16,10 +17,9 @@ public class SimulationPanel extends JPanel {
 	public SimulationPanel() {
 		setPreferredSize(new Dimension(SimulationWindow.width, SimulationWindow.height));
 		setFocusable(true);
-		addKeyListener(new KeyboardListener());
 		
-		SimulationPanel.blocksHorizontal = (int) (SimulationWindow.width/blockSize)-1;
-		SimulationPanel.blocksVertical = (int) (SimulationWindow.height/blockSize)-2;
+		SimulationPanel.blocksHorizontal = SimulationWindow.width;
+		SimulationPanel.blocksVertical = SimulationWindow.height;
 		
 		this.world = new World(10);
 		this.world.generate();

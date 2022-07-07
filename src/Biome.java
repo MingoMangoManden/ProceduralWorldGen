@@ -12,7 +12,7 @@ public enum Biome {
 			new Color(215, 122, 105)
 	}),
 	OCEAN(new Color[] {
-			new Color(0,191,255)
+			new Color(0, 221, 255), new Color(0,191,255), new Color(0, 105, 148), new Color(5, 79, 110), new Color(8, 24, 64)
 	}),
 	HILLS(new Color[] {
 			Color.GRAY
@@ -28,7 +28,21 @@ public enum Biome {
 		this.clrs = clrs;
 	}
 	
-	public Color getBiomeColor(long seed) {
+	public Color getBiomeColor(double height) {
+		
+		if (this == Biome.OCEAN) {
+			if (height < -0.75)
+				return clrs[4];
+			else if (height < -0.64)
+				return clrs[3];
+			else if (height < -0.5)
+				return clrs[2];
+			else if (height < -0.25)
+				return clrs[1];
+			else
+				return clrs[0];
+		}
+		
 		if (clrs.length > 1) {
 			int num = (int) (Math.random()*clrs.length);
 			return clrs[num];

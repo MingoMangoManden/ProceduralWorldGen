@@ -1,5 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,15 +12,22 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
 public class SimulationWindow extends JFrame {
 	
@@ -25,6 +36,7 @@ public class SimulationWindow extends JFrame {
 	public static final int height = 800;
 	
 	static SimulationPanel sp;
+	static JPanel buttonPanel;
 	
 	public SimulationWindow() {
 		
@@ -35,67 +47,77 @@ public class SimulationWindow extends JFrame {
 		setLocationRelativeTo(null);
 		
 		this.sp = new SimulationPanel();
-		loadButtons();
-		loadMenu();
-	}
-	
-	private void loadMenu() {
+		
 		JMenuBar menuBar = new JMenuBar();
-		//JMenu fileMenu = new JMenu("File");
+		setJMenuBar(menuBar);
 		
-		//JMenuItem save = new JMenuItem("Save");
-		/*save.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				File f = new File("image.png");
-				try {
-					ImageIO.write(World.map, "PNG", f);
-					System.out.println("Map saved");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-			
-		});*/
-		//save.setAccelerator(KeyStroke.getKeyStroke("n"));
+		JMenu fileMenu = new JMenu("File");
+		menuBar.add(fileMenu);
 		
-		//fileMenu.add(save);
-		//menuBar.add(fileMenu);
-		add(menuBar);
-	}
-	
-	private void loadButtons() {
-		JPanel buttonPanel = new JPanel();
+		JMenuItem importMenuItem = new JMenuItem("Import");
+		fileMenu.add(importMenuItem);
 		
-		// save
-		JButton save = new JButton("Save image");
-		save.addActionListener(new ActionListener() {
+		JMenuItem exportMenuItem = new JMenuItem("Export");
+		exportMenuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				LocalDateTime dateNow = LocalDateTime.now();
 			    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh-mm-ss");
-			    
 				String date = dateNow.format(dateFormatter);
-				File f = new File("screenshots/" + date + ".png");
-				if (!f.exists())
-					f.mkdirs();
 				
-				System.out.println(date);
-				try {
-					ImageIO.write(World.map, "PNG", f);
-					System.out.println("Map saved");
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				JFileChooser jfc = new JFileChooser();
+				String dir = "";
+				
+				jfc.setDialogTitle("Open the directory of where to export the image file.");
+				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int status = jfc.showOpenDialog(null);
+				if (status == JFileChooser.APPROVE_OPTION) {
+				  dir = jfc.getSelectedFile().getPath();
+				  
+				  File f = new File(dir + "/" + date + ".png");
+				  if (!f.exists())
+					f.mkdirs();
+					try {
+						ImageIO.write(World.map, "PNG", f);
+						System.out.println("Map saved");
+						
+						//JOptionPane.showInputDialog(null);
+						JOptionPane.showMessageDialog(null, "The image file was saved under " + dir);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
+				//dir = "screenshots/";
 			}
 			
 		});
-		buttonPanel.add(save);
+		fileMenu.add(exportMenuItem);
+		
+		JMenu worldMenu = new JMenu("World");
+		menuBar.add(worldMenu);
+		
+		JMenuItem copySeed = new JMenuItem("Copy Seed");
+		copySeed.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StringSelection seedToCopy = new StringSelection(String.valueOf(sp.world.seed));
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(seedToCopy, null);
+				System.out.println("seed copied");
+			}
+			
+		});
+		worldMenu.add(copySeed);
+		loadButtons();
+	}
+	
+	private void loadButtons() {
+		buttonPanel = new JPanel();
 		
 		// new map
 		JButton loadnew = new JButton("Load new map");
+		loadnew.setFocusable(false);
 		loadnew.addActionListener(new ActionListener() {
 
 			@Override
@@ -111,12 +133,54 @@ public class SimulationWindow extends JFrame {
 		});
 		buttonPanel.add(loadnew);
 		
-		buttonPanel.setBackground(Color.BLUE);
-		add(buttonPanel, BorderLayout.SOUTH);
+		
+		// change frequency
+		JTextField frequency = new JTextField();
+		frequency.setToolTipText("Frequency");
+		frequency.setColumns(4);
+		frequency.setBounds(new Rectangle(10, 30));
+		frequency.setText(String.valueOf(sp.world.frequency));
+		frequency.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					sp.world.frequency = Double.parseDouble(frequency.getText());
+					sp.world.generate();
+					sp.repaint();
+				} catch(Exception error) {
+				}
+			}
+			
+		});
+		buttonPanel.add(frequency);
+		
+		
+		//buttonPanel.setBackground(Color.BLUE);
+		getContentPane().add(buttonPanel, BorderLayout.NORTH);
+	}
+	
+	private void initiateMapImageUpdates() {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				SimulationPanel.blocksHorizontal = getWidth();
+				SimulationPanel.blocksVertical = getHeight();
+				sp.setSize(new Dimension(getWidth(), getHeight()));
+				sp.world.updateMapSize(getWidth(), getHeight());
+				buttonPanel.repaint();
+				//sp.world.generate();
+				sp.repaint();
+			}
+			
+		}, 0, 2500);
 	}
 	
 	public void startSimulation() {
-		add(sp, BorderLayout.CENTER);
+		//initiateMapImageUpdates();
+		getContentPane().add(sp, BorderLayout.CENTER);
 		setVisible(true);
 	}
 

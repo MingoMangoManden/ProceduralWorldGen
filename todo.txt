@@ -1,0 +1,5 @@
+TODO LIST:
+- An infinite world.
+- Smart way to easily manipulate the many world generation values.
+- Make the world even more beautiful (choosing the right colors and stuff)
+- Implement the ability to import and export your own noise maps... (import a noise map, of the real world for example, tweak the settings to your preference and export it to a file for later use.)
