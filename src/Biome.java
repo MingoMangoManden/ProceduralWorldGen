@@ -31,13 +31,13 @@ public enum Biome {
 	public Color getBiomeColor(double height) {
 		
 		if (this == Biome.OCEAN) {
-			if (height < -0.75)
+			if (height < World.deepest)
 				return clrs[4];
-			else if (height < -0.64)
+			else if (height < World.deeper)
 				return clrs[3];
-			else if (height < -0.5)
+			else if (height < World.deep)
 				return clrs[2];
-			else if (height < -0.25)
+			else if (height < World.lowerLevel)
 				return clrs[1];
 			else
 				return clrs[0];

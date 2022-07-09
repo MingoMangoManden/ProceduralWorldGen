@@ -17,10 +17,16 @@ public class World {
 	OpenSimplexNoise continentalnessMap;
 	double frequency, amplitude;
 	
-	double oceanHeight = .25;
-	double beachHeight = .4;
-	double hillsHeight = .55;
-	double snowHeight = .75;
+	public static double oceanHeight = .25;
+	public static double beachHeight = .4;
+	public static double hillsHeight = .55;
+	public static double snowHeight = .75;
+	
+	// ocean values
+	public static double deepest = -.75;
+	public static double deeper = -.64;
+	public static double deep = -.5;
+	public static double lowerLevel = -.25;
 	
 	public World(int sampleSize) {
 		this.sampleSize = sampleSize;
