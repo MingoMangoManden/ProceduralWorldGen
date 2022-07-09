@@ -1,5 +1,5 @@
 # ProceduralWorldGen
-A quick program to sample some hopefully neat looking terrain.
+A quick program to sample some hopefully neat looking islands.
 
 
 Some examples of terrain it can generate:
